@@ -13,13 +13,14 @@
 
 from six.moves.urllib.request import Request, urlopen
 from six.moves.urllib.error import HTTPError
-from six.moves.urllib.parse import urlencode
+from six.moves.urllib.parse import urlencode, urlparse
 
 import json
+import os
 
 from parse_rest import core
 
-API_ROOT = 'https://api.parse.com/1'
+API_ROOT = os.environ.get('PARSE_ENDPOINT_ROOT', 'https://api.parse.com/1')
 ACCESS_KEYS = {}
 
 
@@ -87,7 +88,8 @@ class ParseBase(object):
         command.
         """
         if batch:
-            ret = {"method": http_verb, "path": uri.split("parse.com", 1)[1]}
+            urlsplitter = urlparse(API_ROOT).netloc
+            ret = {"method": http_verb, "path": uri.split(urlsplitter, 1)[1]}
             if kw:
                 ret["body"] = kw
             return ret
